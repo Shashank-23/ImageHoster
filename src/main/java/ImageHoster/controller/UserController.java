@@ -44,27 +44,28 @@ public class UserController {
     public String registerUser(User user,Model model) {
 
         String passwordTypeError = "Password must contain at least 1 alphabet, 1 number & 1 special character";
-        boolean flagInvalidPassword = false;
+        boolean isValidPassword = true;
         String enteredPassword = user.getPassword();
-        Pattern specailCharPatten = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
-        Pattern UpperCasePatten = Pattern.compile("[A-Z ]");
-        Pattern lowerCasePatten = Pattern.compile("[a-z ]");
-        Pattern digitCasePatten = Pattern.compile("[0-9 ]");
-        if(enteredPassword.length() < 3){
-            flagInvalidPassword = true;
+        Pattern specailCharPatten = Pattern.compile("[^a-z0-9]", Pattern.CASE_INSENSITIVE);        //Password patterns according to given constrains
+        Pattern alphabetPattern = Pattern.compile("[A-Z]", Pattern.CASE_INSENSITIVE);
+        Pattern digitCasePatten = Pattern.compile("[0-9]");
+
+        if (enteredPassword.length() < 3) {
+            isValidPassword=false;
         }
-        else if(!specailCharPatten.matcher(enteredPassword).find() &&
-                (!UpperCasePatten.matcher(enteredPassword).find() || !lowerCasePatten.matcher(enteredPassword).find()) &&
-                !digitCasePatten.matcher(enteredPassword).find()){
-            flagInvalidPassword = true;
+        if (!specailCharPatten.matcher(enteredPassword).find()) {
+            isValidPassword=false;
+        }
+        if (!alphabetPattern.matcher(enteredPassword).find()) {
+            isValidPassword=false;
+        }
+        if (!digitCasePatten.matcher(enteredPassword).find()) {
+            isValidPassword=false;
         }
 
-        if(flagInvalidPassword){
-//            User user1 = new User();
-//            UserProfile profile = new UserProfile();
-//            user1.setProfile(profile);
+        if(!isValidPassword){
             model.addAttribute("User", user);
-            model.addAttribute("passwordTypeError",passwordTypeError);
+            model.addAttribute("passwordTypeError",passwordTypeError);        // adding password error in model only if password is invalid
             return "users/registration";
         }
         userService.registerUser(user);
